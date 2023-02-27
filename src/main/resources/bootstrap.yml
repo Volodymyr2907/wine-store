@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: vine-client
+server:
+  port: 8383
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
