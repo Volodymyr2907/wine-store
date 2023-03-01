@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    <changeSet id="1" author="volodymyr">
+        <createTable tableName="vine">
+            <column name="id" type="varchar(36)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manufacturer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="grape_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="varchar(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_sparkling" type="tinyint(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sugar" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region" type="varchar(255)"/>
+            <column name="year" type="int(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="float(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="int(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="abv" type="float(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="post_office">
+            <column name="id" type="varchar(36)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="city" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="office_number" type="int(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="office_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="order">
+            <column name="id" type="varchar(36)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="varchar(36)">
+            </column>
+            <column name="user_email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="post_office_id" type="varchar(36)">
+                <constraints foreignKeyName="fk_order_post_office" references="post_office(id)" />
+            </column>
+            <column name="home_address" type="varchar(1000)"/>
+            <column name="datetime" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sum" type="float(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="order_vine">
+            <column name="order_id" type="varchar(36)">
+                <constraints primaryKey="true" foreignKeyName="fk_order_id" references="order(id)"/>
+            </column>
+            <column name="vine_id" type="varchar(36)">
+                <constraints primaryKey="true" foreignKeyName="fk_vine_id" references="vine(id)"/>
+            </column>
+            <column name="vine_amount" type="int(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+</databaseChangeLog>

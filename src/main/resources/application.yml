@@ -1,0 +1,9 @@
+spring:
+  liquibase:
+    change-log: "classpath:db/changelog/vine-changelog.xml"
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/vine_db
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
