@@ -39,8 +39,8 @@ public class Vine extends BaseEntity {
     @Column(name = "color", nullable = false, length = 36)
     private String color;
 
-    @Column(name = "is_sparking", nullable = false)
-    private boolean isSparking;
+    @Column(name = "is_sparkling", nullable = false)
+    private boolean isSparkling;
 
     @Column(name = "sugar", nullable = false, length = 36)
     private String sugar;
