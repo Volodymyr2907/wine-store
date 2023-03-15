@@ -1,9 +1,13 @@
 package com.mentorship.vineservice.domain;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +19,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Vine extends BaseEntity {
+
+    @OneToMany(
+        mappedBy = "vine",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<OrderVine> orders = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -51,10 +62,5 @@ public class Vine extends BaseEntity {
 
     @Column(name = "abv", nullable = false, precision = 2, scale = 1)
     private double abv;
-
-
-
-
-
 
 }
