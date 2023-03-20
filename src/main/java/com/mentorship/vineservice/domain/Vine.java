@@ -1,16 +1,21 @@
 package com.mentorship.vineservice.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 
 @Entity
@@ -25,42 +30,60 @@ public class Vine extends BaseEntity {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @JsonIgnore
     private List<OrderVine> orders = new ArrayList<>();
 
-    @Column(name = "name", nullable = false)
+    @NotBlank(message = "Name can not be empty or null")
+    @Length(max = 255, message = "Name name is too long")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "manufacturer", nullable = false)
+    @NotBlank(message = "Manufacturer can not be empty or null")
+    @Length(max = 255, message = "Manufacturer name is too long")
+    @Column(name = "manufacturer")
     private String manufacturer;
 
-    @Column(name = "grape_name", nullable = false)
+    @NotBlank(message = "Grape name can not be empty or null")
+    @Length(max = 255, message = "Grape name name is too long")
+    @Column(name = "grape_name")
     private String grapeName;
 
-    @Column(name = "color", nullable = false, length = 36)
+    @NotBlank(message = "Color can not be empty or null")
+    @Length(max = 36, message = "Color name is too long")
+    @Column(name = "color")
     private String color;
 
-    @Column(name = "is_sparking", nullable = false)
-    private boolean isSparking;
+    @Column(name = "is_sparkling")
+    private Boolean isSparkling;
 
-    @Column(name = "sugar", nullable = false, length = 36)
+    @NotBlank(message = "Sugar can not be empty or null")
+    @Length(max = 36, message = "Sugar name is too long")
+    @Column(name = "sugar")
     private String sugar;
 
-    @Column(name = "country", nullable = false)
+    @NotBlank(message = "Country can not be empty or null")
+    @Length(max = 255, message = "Country name is too long")
+    @Column(name = "country")
     private String country;
 
+    @Length(max = 255, message = "Region name is too long")
     @Column(name = "region")
     private String region;
 
+    @Positive(message = "Year must be greater then 0")
     @Column(name = "year", nullable = false, length = 4)
-    private int year;
+    private Integer year;
 
+    @Range(min = 0, max = 999999, message = "Price should be from 0 to 999999")
     @Column(name = "price", nullable = false, precision = 6, scale = 2)
-    private double price;
+    private Double price;
 
+    @Positive(message = "Amount must be greater then 0")
     @Column(name = "amount", nullable = false, length = 5)
-    private int amount;
+    private Integer amount;
 
-    @Column(name = "abv", nullable = false, precision = 2, scale = 1)
-    private double abv;
+    @Range(min = 0, max = 30, message = "Abv should be from 0 to 30")
+    @Column(name = "abv", nullable = false)
+    private Double abv;
 
 }

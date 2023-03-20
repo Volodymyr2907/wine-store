@@ -16,9 +16,9 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class OrderVineId implements Serializable {
 
-    @Column(name = "order_id", nullable = false, updatable = false, length = 36)
-    private String orderId;
+    @Column(name = "order_id", nullable = false, updatable = false)
+    private Long orderId;
 
-    @Column(name = "vine_id", nullable = false, updatable = false, length = 36)
-    private String vineId;
+    @Column(name = "vine_id", nullable = false, updatable = false)
+    private Long vineId;
 }

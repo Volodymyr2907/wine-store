@@ -2,7 +2,7 @@ package com.mentorship.vineservice.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -28,9 +28,9 @@ public class Order extends BaseEntity {
     private List<OrderVine> vines = new ArrayList<>();
 
     @Column(name = "user_id", length = 36)
-    private String userId;
+    private Long userId;
 
-    @EmbeddedId
+    @Embedded
     private DeliveryDetails deliveryDetails;
 
     @Column(name = "date_time", nullable = false)
