@@ -1,6 +1,7 @@
 package com.mentorship.vineservice.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,42 +26,43 @@ public class Vine extends BaseEntity {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @JsonIgnore
     private List<OrderVine> orders = new ArrayList<>();
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "manufacturer", nullable = false)
+    @Column(name = "manufacturer")
     private String manufacturer;
 
-    @Column(name = "grape_name", nullable = false)
+    @Column(name = "grape_name")
     private String grapeName;
 
-    @Column(name = "color", nullable = false, length = 36)
+    @Column(name = "color")
     private String color;
 
-    @Column(name = "is_sparkling", nullable = false)
-    private boolean isSparkling;
+    @Column(name = "is_sparkling")
+    private Boolean isSparkling;
 
-    @Column(name = "sugar", nullable = false, length = 36)
+    @Column(name = "sugar")
     private String sugar;
 
-    @Column(name = "country", nullable = false)
+    @Column(name = "country")
     private String country;
 
     @Column(name = "region")
     private String region;
 
     @Column(name = "year", nullable = false, length = 4)
-    private int year;
+    private Integer year;
 
     @Column(name = "price", nullable = false, precision = 6, scale = 2)
-    private double price;
+    private Double price;
 
     @Column(name = "amount", nullable = false, length = 5)
-    private int amount;
+    private Integer amount;
 
-    @Column(name = "abv", nullable = false, precision = 2, scale = 1)
-    private double abv;
+    @Column(name = "abv", nullable = false)
+    private Double abv;
 
 }

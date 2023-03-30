@@ -27,8 +27,8 @@ public class Order extends BaseEntity {
     )
     private List<OrderVine> vines = new ArrayList<>();
 
-    @Column(name = "user_id", length = 36)
-    private String userId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Embedded
     private DeliveryDetails deliveryDetails;
