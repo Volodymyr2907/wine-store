@@ -1,8 +1,10 @@
 package com.mentorship.vineservice.controllers;
 
 
+import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
+import com.mentorship.vineservice.dto.enums.UserRole;
 import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.services.VineService;
 import jakarta.validation.Valid;
@@ -11,24 +13,35 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/vine-service")
 public class VineController {
 
     private static final String TOTAL_COUNT_HEADER = "X-Total-Count";
+    private static final String YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION = "You have no permission to do this action.";
     private final VineService vineService;
 
     @PostMapping("/vine")
-    public ResponseEntity<Long> createVine(@Valid @RequestBody VineDto vine) {
+    public ResponseEntity<Long> createVine(@Valid @RequestBody VineDto vine,
+        @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-        Long createdVineId = vineService.saveVine(vine);
-        return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
+        String token = getTokenFromRequest(requestHeader);
+        if (checkUserPermission(token, UserRole.ADMIN.name())) {
+            Long createdVineId = vineService.saveVine(vine);
+            return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
+        }
+        throw new VinePermissionException(HttpStatus.FORBIDDEN, YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION);
     }
 
     @GetMapping("/vines")
@@ -59,5 +72,21 @@ public class VineController {
         return new ResponseEntity<>(vinesDto.getVines(), headers, HttpStatus.OK);
 
     }
+
+
+    private Boolean checkUserPermission(String token, String role) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8384/api/auth-service/permission/{token}/{role}";
+        return restTemplate.getForObject(url, Boolean.class, token, role);
+    }
+
+
+    private String getTokenFromRequest(String request) throws VinePermissionException {
+
+        if (StringUtils.hasText(request) && request.startsWith("Bearer ")) {
+            return request.substring(7);
+        } throw new VinePermissionException(HttpStatus.FORBIDDEN, "Invalid token.");
+    }
+
 
 }
