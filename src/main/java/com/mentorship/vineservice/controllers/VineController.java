@@ -1,10 +1,13 @@
 package com.mentorship.vineservice.controllers;
 
 
+import static com.mentorship.vineservice.dto.enums.VineColor.getVineColor;
+
 import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.dto.enums.UserRole;
+import com.mentorship.vineservice.dto.enums.VineColor;
 import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.services.VineService;
 import jakarta.validation.Valid;
@@ -33,7 +36,7 @@ public class VineController {
     private final VineService vineService;
 
     @PostMapping("/vine")
-    public ResponseEntity<Long> createVine(@Valid @RequestBody VineDto vine,
+    public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
         String token = getTokenFromRequest(requestHeader);
@@ -45,8 +48,8 @@ public class VineController {
     }
 
     @GetMapping("/vines")
-    public ResponseEntity<List<VineDto>> getAllVinesWithPagination(@Valid
-    @RequestParam(required = false, value = "page", defaultValue = "0") Integer page,
+    public ResponseEntity<List<VineDto>> getAllVinesWithPagination(
+        @RequestParam(required = false, value = "page", defaultValue = "0") Integer page,
         @RequestParam(required = false, value = "size", defaultValue = "5") Integer size,
         @RequestParam(required = false, value = "name") String name,
         @RequestParam(required = false, value = "grape") String grape,
@@ -60,7 +63,7 @@ public class VineController {
             .name(name)
             .grapeName(grape)
             .sugar(sugar)
-            .color(color)
+            .color(getVineColor(color))
             .year(year)
             .build();
 
@@ -85,7 +88,8 @@ public class VineController {
 
         if (StringUtils.hasText(request) && request.startsWith("Bearer ")) {
             return request.substring(7);
-        } throw new VinePermissionException(HttpStatus.FORBIDDEN, "Invalid token.");
+        }
+        throw new VinePermissionException(HttpStatus.FORBIDDEN, "Invalid token.");
     }
 
 

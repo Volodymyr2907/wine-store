@@ -1,5 +1,6 @@
 package com.mentorship.vineservice.dto;
 
+import com.mentorship.vineservice.dto.enums.VineColor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -30,9 +31,7 @@ public class VineDto {
     @Length(max = 255, message = "Grape name name is too long")
     private String grapeName;
 
-    @NotBlank(message = "Color can not be empty or null")
-    @Length(max = 36, message = "Color name is too long")
-    private String color;
+    private VineColor color;
 
     private Boolean isSparkling;
 

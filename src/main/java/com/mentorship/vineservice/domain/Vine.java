@@ -2,9 +2,12 @@ package com.mentorship.vineservice.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mentorship.vineservice.dto.enums.VineColor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
@@ -38,8 +41,9 @@ public class Vine extends BaseEntity {
     @Column(name = "grape_name")
     private String grapeName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "color")
-    private String color;
+    private VineColor color;
 
     @Column(name = "is_sparkling")
     private Boolean isSparkling;
