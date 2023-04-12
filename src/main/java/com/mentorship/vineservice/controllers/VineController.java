@@ -55,7 +55,7 @@ public class VineController {
 
 
     @GetMapping("/vines")
-    public ResponseEntity<List<VineDto>> getAllVinesWithPagination(
+    public ResponseEntity<List<VineDto>> getAllVinesWithPagination(@Valid
         @RequestParam(required = false, value = "page", defaultValue = "0") Integer page,
         @RequestParam(required = false, value = "size", defaultValue = "5") Integer size,
         @RequestParam(required = false, value = "name") String name,
@@ -90,7 +90,6 @@ public class VineController {
         return restTemplate.getForObject(url, Boolean.class, token, role);
     }
 
-
     private String getTokenFromRequest(String request) {
 
         if (StringUtils.hasText(request) && request.startsWith("Bearer ")) {
@@ -98,6 +97,5 @@ public class VineController {
         }
         throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Not Bearer token");
     }
-
 
 }
