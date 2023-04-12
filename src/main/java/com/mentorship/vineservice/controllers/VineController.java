@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,13 +41,18 @@ public class VineController {
     public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-        String token = getTokenFromRequest(requestHeader);
-        if (checkUserPermission(token, UserRole.ADMIN.name())) {
-            Long createdVineId = vineService.saveVine(vine);
-            return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
+        try {
+            String token = getTokenFromRequest(requestHeader);
+            if (checkUserPermission(token, UserRole.ADMIN.name())) {
+                Long createdVineId = vineService.saveVine(vine);
+                return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
+            }
+            throw new VinePermissionException(HttpStatus.FORBIDDEN, YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION);
+        } catch (HttpClientErrorException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        throw new VinePermissionException(HttpStatus.FORBIDDEN, YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION);
     }
+
 
     @GetMapping("/vines")
     public ResponseEntity<List<VineDto>> getAllVinesWithPagination(
@@ -90,7 +96,7 @@ public class VineController {
         if (StringUtils.hasText(request) && request.startsWith("Bearer ")) {
             return request.substring(7);
         }
-        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
+        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Not Bearer token");
     }
 
 

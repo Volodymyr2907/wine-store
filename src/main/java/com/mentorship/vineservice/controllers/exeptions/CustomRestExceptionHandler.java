@@ -42,11 +42,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(exception.getStatus(), List.of(exception.getMessage()));
     }
 
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<Object> handleUserValidationException(HttpClientErrorException exception) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {
