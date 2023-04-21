@@ -33,9 +33,9 @@ public class DeliveryDetails implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "post_office_id")
-    private PostOffice postOfficeId;
+    private PostOffice postOfficeId = null;
 
     @Column(name = "home_address", length = 1000)
-    private String homeAddress;
+    private String homeAddress = null;
 
 }

@@ -3,16 +3,23 @@ package com.mentorship.vineservice.controllers;
 
 import static com.mentorship.vineservice.dto.enums.VineColor.getVineColor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
+import com.mentorship.vineservice.domain.Order;
+import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.dto.enums.UserRole;
 import com.mentorship.vineservice.dto.enums.VineColor;
 import com.mentorship.vineservice.model.VinesQueryParameters;
+import com.mentorship.vineservice.services.OrderService;
 import com.mentorship.vineservice.services.VineService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +43,7 @@ public class VineController {
     private static final String TOTAL_COUNT_HEADER = "X-Total-Count";
     private static final String YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION = "You have no permission to do this action.";
     private final VineService vineService;
+    private final OrderService orderService;
 
     @PostMapping("/vine")
     public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
@@ -56,7 +64,7 @@ public class VineController {
 
     @GetMapping("/vines")
     public ResponseEntity<List<VineDto>> getAllVinesWithPagination(@Valid
-        @RequestParam(required = false, value = "page", defaultValue = "0") Integer page,
+    @RequestParam(required = false, value = "page", defaultValue = "0") Integer page,
         @RequestParam(required = false, value = "size", defaultValue = "5") Integer size,
         @RequestParam(required = false, value = "name") String name,
         @RequestParam(required = false, value = "grape") String grape,
@@ -81,6 +89,16 @@ public class VineController {
 
         return new ResponseEntity<>(vinesDto.getVines(), headers, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<Long> createOrder(@RequestBody Order order) {
+
+
+        Long createdOrderId = orderService.createOrder(order);
+
+
+        return new ResponseEntity<>(createdOrderId, HttpStatus.CREATED);
     }
 
 

@@ -7,3 +7,15 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        jdbc:
+#          core:
+#            JdbcTemplate:
+#              DEBUG
+#            StatementCreatorUtils:
+#              TRACE
