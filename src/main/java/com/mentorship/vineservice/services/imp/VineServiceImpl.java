@@ -14,6 +14,7 @@ import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.repositories.VineRepository;
 import com.mentorship.vineservice.services.VineService;
 import jakarta.transaction.Transactional;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,8 +39,8 @@ public class VineServiceImpl implements VineService {
 
         Pageable pageable = PageRequest.of(vinesQueryParameters.getPage(), vinesQueryParameters.getSize());
 
-        Page<Vine>  vinePages = vineRepository.findAll(Specification.where(
-            equalsName(vinesQueryParameters.getName()))
+        Page<Vine> vinePages = vineRepository.findAll(Specification.where(
+                equalsName(vinesQueryParameters.getName()))
             .and(equalsSugar(vinesQueryParameters.getSugar()))
             .and(equalsColor(vinesQueryParameters.getColor()))
             .and(equalsGrape(vinesQueryParameters.getGrapeName()))
@@ -49,6 +50,21 @@ public class VineServiceImpl implements VineService {
             .totalCount(vinePages.getTotalElements())
             .vines(vineMapper.vineListToVineDtoList(vinePages.getContent()))
             .build();
+    }
+
+    @Override
+    public Vine getVineById(Long vineId) {
+        return vineRepository.findById(vineId)
+            .orElseThrow(() -> new NoSuchElementException(String.format("Vine with id %s not found", vineId)));
+    }
+
+    @Override
+    public void updateVineAmount(VineDto vineDto) {
+
+        Vine vine = getVineById(vineDto.getId());
+        vineMapper.updateVineFromDto(vineDto, vine);
+        vineRepository.save(vine);
+
     }
 
 }

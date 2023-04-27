@@ -24,7 +24,7 @@ public class OrderDto {
 
     private Double sum;
 
-    private List<OrderVineDto> vines = new ArrayList<>();
+    private List<OrderVineDto> vines;
 
     private DeliveryDetailsDto deliveryDetails;
 

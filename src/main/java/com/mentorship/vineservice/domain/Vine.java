@@ -1,17 +1,12 @@
 package com.mentorship.vineservice.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mentorship.vineservice.dto.enums.VineColor;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
@@ -20,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 
 @Entity
@@ -31,18 +25,11 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 public class Vine extends BaseEntity {
 
-//    @OneToMany(
-//        mappedBy = "vine",
-//        cascade = CascadeType.ALL,
-//        orphanRemoval = true
-//    )
-//    @JsonIgnore
-////    @ElementCollection(targetClass = OrderVineId.class, fetch = FetchType.EAGER)
-//    @CollectionTable(name = "order_vine",
-//        joinColumns = {@JoinColumn(name = "vine_id")}
-//    )
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "vine_id", referencedColumnName = "id")
+    @OneToMany(
+        mappedBy = "vine",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<OrderVine> orders = new ArrayList<>();
 
     @Column(name = "name")

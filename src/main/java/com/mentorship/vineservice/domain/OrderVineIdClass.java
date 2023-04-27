@@ -1,6 +1,5 @@
 package com.mentorship.vineservice.domain;
 
-import jakarta.persistence.Column;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -3,27 +3,24 @@ package com.mentorship.vineservice.controllers;
 
 import static com.mentorship.vineservice.dto.enums.VineColor.getVineColor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
-import com.mentorship.vineservice.domain.Order;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.dto.enums.UserRole;
-import com.mentorship.vineservice.dto.enums.VineColor;
+import com.mentorship.vineservice.event.model.OrderEvent;
 import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.services.OrderService;
+import com.mentorship.vineservice.services.PermissionValidationService;
 import com.mentorship.vineservice.services.VineService;
 import jakarta.validation.Valid;
+import java.security.Permission;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,24 +35,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class VineController {
 
     private static final String TOTAL_COUNT_HEADER = "X-Total-Count";
-    private static final String YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION = "You have no permission to do this action.";
     private final VineService vineService;
     private final OrderService orderService;
+    private final PermissionValidationService permissionValidationService;
 
     @PostMapping("/vine")
     public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-        try {
-            String token = getTokenFromRequest(requestHeader);
-            if (checkUserPermission(token, UserRole.ADMIN.name())) {
-                Long createdVineId = vineService.saveVine(vine);
-                return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
-            }
-            throw new VinePermissionException(HttpStatus.FORBIDDEN, YOU_HAVE_NO_PERMISSION_TO_DO_THIS_ACTION);
-        } catch (HttpClientErrorException ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+        permissionValidationService.validateUserPermission(requestHeader, UserRole.ADMIN);
+        Long createdVineId = vineService.saveVine(vine);
+        return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
     }
 
 
@@ -92,28 +79,11 @@ public class VineController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Long> createOrder(@RequestBody Order order) {
+    public ResponseEntity<Long> createOrder(@RequestBody OrderDto order,
+        @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-
+        permissionValidationService.validateUserPermission(requestHeader, UserRole.USER);
         Long createdOrderId = orderService.createOrder(order);
-
-
         return new ResponseEntity<>(createdOrderId, HttpStatus.CREATED);
     }
-
-
-    private Boolean checkUserPermission(String token, String role) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8384/api/auth-service/permission/{token}/{role}";
-        return restTemplate.getForObject(url, Boolean.class, token, role);
-    }
-
-    private String getTokenFromRequest(String request) {
-
-        if (StringUtils.hasText(request) && request.startsWith("Bearer ")) {
-            return request.substring(7);
-        }
-        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Not Bearer token");
-    }
-
 }

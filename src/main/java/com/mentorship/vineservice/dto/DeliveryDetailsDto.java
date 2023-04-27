@@ -19,7 +19,7 @@ public class DeliveryDetailsDto {
 
     private String phoneNumber;
 
-    private PostOfficeDto postOfficeId;
+    private PostOfficeDto postOffice;
 
     private String homeAddress;
 

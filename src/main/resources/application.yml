@@ -8,13 +8,11 @@ spring:
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  rabbitmq:
+    template:
+      exchange: vine.exchange
+      routing-key: vine.routingkey
 
-
-#  jpa:
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
 
 
 logging:
@@ -22,19 +20,11 @@ logging:
     org:
       hibernate:
         SQL:
-          trace
+          TRACE
         orm:
           jdbc:
             bind:
-              trace
-
-#  logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-
-#logging:
-#  level:
-#    org:
-#      hibernate: debug
-#      springframework:
-#        debug
-#    sql: debug
-#    root: debug
+              TRACE
+      springframework:
+        amqp:
+          DEBUG

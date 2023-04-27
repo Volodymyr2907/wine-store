@@ -1,12 +1,9 @@
 package com.mentorship.vineservice.services;
 
-import com.mentorship.vineservice.domain.Order;
+import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
 import com.mentorship.vineservice.dto.OrderDto;
 
 public interface OrderService {
 
-    Long createOrder(OrderDto orderDto);
-
-    Long createOrder(Order orderDto);
-
+    Long createOrder(OrderDto orderDto) throws VinePermissionException;
 }
