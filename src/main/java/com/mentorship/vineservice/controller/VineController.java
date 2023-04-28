@@ -1,17 +1,17 @@
-package com.mentorship.vineservice.controllers;
+package com.mentorship.vineservice.controller;
 
 
 import static com.mentorship.vineservice.dto.enums.VineColor.getVineColor;
 
-import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
+import com.mentorship.vineservice.controller.exeption.VinePermissionException;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.dto.enums.UserRole;
 import com.mentorship.vineservice.model.VinesQueryParameters;
-import com.mentorship.vineservice.services.OrderService;
-import com.mentorship.vineservice.services.PermissionValidationService;
-import com.mentorship.vineservice.services.VineService;
+import com.mentorship.vineservice.service.OrderService;
+import com.mentorship.vineservice.service.PermissionValidationService;
+import com.mentorship.vineservice.service.VineService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

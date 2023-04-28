@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.services.imp;
+package com.mentorship.vineservice.service.impl;
 
 import static com.mentorship.vineservice.specification.VineSpecification.equalsColor;
 import static com.mentorship.vineservice.specification.VineSpecification.equalsGrape;
@@ -11,8 +11,8 @@ import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.mapper.VineMapper;
 import com.mentorship.vineservice.model.VinesQueryParameters;
-import com.mentorship.vineservice.repositories.VineRepository;
-import com.mentorship.vineservice.services.VineService;
+import com.mentorship.vineservice.repository.VineRepository;
+import com.mentorship.vineservice.service.VineService;
 import jakarta.transaction.Transactional;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.mentorship.vineservice.services;
+package com.mentorship.vineservice.service;
 
-import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
+import com.mentorship.vineservice.controller.exeption.VinePermissionException;
 import com.mentorship.vineservice.dto.OrderDto;
 
 public interface OrderService {

@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.services;
+package com.mentorship.vineservice.service;
 
 import com.mentorship.vineservice.domain.Vine;
 import com.mentorship.vineservice.dto.VineDto;

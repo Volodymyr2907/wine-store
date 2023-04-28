@@ -1,6 +1,6 @@
-package com.mentorship.vineservice.services.imp;
+package com.mentorship.vineservice.service.impl;
 
-import com.mentorship.vineservice.controllers.exeptions.VinePermissionException;
+import com.mentorship.vineservice.controller.exeption.VinePermissionException;
 import com.mentorship.vineservice.domain.Order;
 import com.mentorship.vineservice.domain.OrderVine;
 import com.mentorship.vineservice.domain.PostOffice;
@@ -8,19 +8,19 @@ import com.mentorship.vineservice.domain.Vine;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.PostOfficeDto;
 import com.mentorship.vineservice.dto.VineDto;
-import com.mentorship.vineservice.event.model.OrderEvent;
 import com.mentorship.vineservice.mapper.VineMapper;
-import com.mentorship.vineservice.repositories.OrderRepository;
-import com.mentorship.vineservice.repositories.PostOfficeRepository;
-import com.mentorship.vineservice.services.OrderService;
-import com.mentorship.vineservice.services.VineService;
+import com.mentorship.vineservice.repository.OrderRepository;
+import com.mentorship.vineservice.repository.PostOfficeRepository;
+import com.mentorship.vineservice.service.EventService;
+import com.mentorship.vineservice.service.OrderService;
+import com.mentorship.vineservice.service.PostOfficeService;
+import com.mentorship.vineservice.service.VineService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,29 +32,21 @@ import org.springframework.stereotype.Service;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final PostOfficeRepository postOfficeRepository;
     private final VineMapper vineMapper;
     private final VineService vineService;
-    private final RabbitTemplate rabbitTemplate;
-
-    private static final String CREATE_ORDER_EVENT_MESSAGE = "New order has been created";
-
-    @Value("${spring.rabbitmq.template.exchange}")
-    private String exchange;
-
-    @Value("${spring.rabbitmq.template.routing-key}")
-    private String routingKey;
+    private final EventService eventService;
+    private final PostOfficeService postOfficeService;
 
     @Override
     public Long createOrder(OrderDto orderDto) throws VinePermissionException {
 
-        Order order = vineMapper.orderDtoToOrder(orderDto);
-        List<OrderVine> orderVineList = vineMapper.orderVineDtoToOrderVine(orderDto.getVines());
-
         String homeAddress = orderDto.getDeliveryDetails().getHomeAddress();
         PostOfficeDto postOffice = orderDto.getDeliveryDetails().getPostOffice();
 
-        validateDuplicationDeliveryDetails(homeAddress, postOffice);
+        validateDuplicatedDeliveryDetails(homeAddress, postOffice);
+
+        Order order = vineMapper.orderDtoToOrder(orderDto);
+        List<OrderVine> orderVineList = vineMapper.orderVineDtoToOrderVine(orderDto.getVines());
 
         addPostOfficeIfPresent(postOffice, order);
 
@@ -65,13 +57,13 @@ public class OrderServiceImpl implements OrderService {
 
         updateSoldVineAndVineAmount(orderVineList);
 
-        publishCreatedOrderEvent(CREATE_ORDER_EVENT_MESSAGE, createdOrderId);
+        eventService.publishOrderEvent("New order has been created", createdOrderId);
 
         return createdOrderId;
     }
 
 
-    private void validateDuplicationDeliveryDetails(String homeAddress, PostOfficeDto postOffice)
+    private void validateDuplicatedDeliveryDetails(String homeAddress, PostOfficeDto postOffice)
         throws VinePermissionException {
         if (homeAddress == null && postOffice == null) {
             throw new VinePermissionException(HttpStatus.BAD_REQUEST,
@@ -84,13 +76,10 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    public void addPostOfficeIfPresent(PostOfficeDto postOffice, Order order) {
+    private void addPostOfficeIfPresent(PostOfficeDto postOffice, Order order) {
         if (postOffice != null) {
-            PostOffice postOfficeObject = postOfficeRepository.findPostOfficeByCityAndOfficeNumber(postOffice.getCity(),
-                    postOffice.getOfficeNumber())
-                .orElseThrow(() -> new NoSuchElementException(
-                    String.format("Post office in %s with number %s not exist", postOffice.getCity(),
-                        postOffice.getOfficeNumber())));
+            PostOffice postOfficeObject = postOfficeService.findPostOfficeByCityAndOfficeNumber(postOffice.getCity(),
+                postOffice.getOfficeNumber());
 
             order.getDeliveryDetails().setPostOfficeId(postOfficeObject.getId());
             log.info(String.format("Post office id '%s' added to order", postOfficeObject.getId()));
@@ -99,20 +88,22 @@ public class OrderServiceImpl implements OrderService {
 
     private void addVinesToOrder(Order order, List<OrderVine> orderVines) {
         order.setVines(new ArrayList<>());
-        orderVines.forEach(orders -> {
-            Vine vineObject = vineService.getVineById(orders.getOrderVineId().getVineId());
+        orderVines.forEach(orderVine -> {
+            Vine vineObject = vineService.getVineById(orderVine.getOrderVineId().getVineId());
             Integer availableVines = vineObject.getAmount();
-            if (orders.getVineAmount() > availableVines) {
+            if (orderVine.getVineAmount() > availableVines) {
                 try {
-                    throw new VinePermissionException(HttpStatus.BAD_REQUEST,
-                        String.format("We can not handle %s bottles of wine %s", orders.getVineAmount(),
+                    throw new IllegalArgumentException(
+                        String.format("We can not handle %s bottles of wine %s", orderVine.getVineAmount(),
                             vineObject.getName()));
-                } catch (VinePermissionException e) {
+                } catch (IllegalArgumentException e) {
                     throw new RuntimeException(e);
                 }
             }
-            order.addVine(vineObject, orders.getVineAmount());
-            log.info(String.format("Vine '%s' added to order", orders.getOrderVineId().getVineId()));
+            {
+                order.addVine(vineObject, orderVine.getVineAmount());
+                log.info(String.format("Vine '%s' added to order", orderVine.getOrderVineId().getVineId()));
+            }
         });
     }
 
@@ -130,11 +121,5 @@ public class OrderServiceImpl implements OrderService {
             log.info(String.format("Sold amount for vineId '%s' updated to  '%s'", vine.getOrderVineId().getVineId(),
                 vineDto.getSoldWine()));
         });
-    }
-
-    private void publishCreatedOrderEvent(String message, Long orderId) {
-
-        OrderEvent orderEvent = new OrderEvent(orderId, message);
-        rabbitTemplate.convertAndSend(exchange, routingKey, orderEvent);
     }
 }

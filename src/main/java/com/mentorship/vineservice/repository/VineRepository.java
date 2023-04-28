@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.repositories;
+package com.mentorship.vineservice.repository;
 
 import com.mentorship.vineservice.domain.Vine;
 import java.util.Optional;
@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface VineRepository extends JpaRepository<Vine, Long>, JpaSpecificationExecutor<Vine> {
 
-    @Override
     Optional<Vine> findById(Long vineId);
 }

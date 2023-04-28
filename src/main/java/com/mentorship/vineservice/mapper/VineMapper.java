@@ -6,7 +6,6 @@ import com.mentorship.vineservice.domain.OrderVine;
 import com.mentorship.vineservice.domain.Vine;
 import com.mentorship.vineservice.dto.DeliveryDetailsDto;
 import com.mentorship.vineservice.dto.OrderDto;
-import com.mentorship.vineservice.dto.OrderVineDto;
 import com.mentorship.vineservice.dto.VineDto;
 import java.util.List;
 import org.mapstruct.BeanMapping;
@@ -22,11 +21,10 @@ public interface VineMapper {
 
     Order orderDtoToOrder(OrderDto orderDto);
 
-    List<OrderVine> orderVineDtoToOrderVine(List<OrderVineDto> orderVineDto);
+    List<OrderVine> orderVineDtoToOrderVine(List<OrderDto.OrderVineDto> orderVineDto);
 
-    @Mapping(target = "orderVineId.orderId", source = "orderId")
     @Mapping(target = "orderVineId.vineId", source = "vineId")
-    OrderVine dtoToOrderVine(OrderVineDto orderVineDto);
+    OrderVine dtoToOrderVine(OrderDto.OrderVineDto orderVineDto);
 
     DeliveryDetails dtoToDeliveryDetails(DeliveryDetailsDto deliveryDetailsDto);
 

@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.controllers.exeptions;
+package com.mentorship.vineservice.controller.exeption;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
@@ -32,13 +32,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(RuntimeException ex) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Object> handleNoSuchElementException(RuntimeException ex) {
+    @ExceptionHandler(value = { IllegalArgumentException.class, NoSuchElementException.class })
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 

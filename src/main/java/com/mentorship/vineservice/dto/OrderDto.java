@@ -1,8 +1,6 @@
 package com.mentorship.vineservice.dto;
 
-import com.mentorship.vineservice.domain.OrderVine;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,5 +25,19 @@ public class OrderDto {
     private List<OrderVineDto> vines;
 
     private DeliveryDetailsDto deliveryDetails;
+
+
+    @Getter
+    @Setter
+    public static class OrderVineDto {
+
+        private Long vineId;
+
+        private Integer vineAmount;
+
+    }
+
+
+
 
 }
