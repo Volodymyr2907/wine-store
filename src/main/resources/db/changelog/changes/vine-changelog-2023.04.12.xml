@@ -10,7 +10,7 @@
         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
     <changeSet id="Add sold_wine to vine" author="volodymyr">
         <addColumn tableName="vine">
-            <column name="sold_wine" type="int(5)" defaultValueComputed="0">
+            <column name="sold_wine" type="int(5)" defaultValueNumeric="0">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

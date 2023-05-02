@@ -36,8 +36,4 @@ public class OrderDto {
         private Integer vineAmount;
 
     }
-
-
-
-
 }
