@@ -32,7 +32,7 @@ public class VineServiceImpl implements VineService {
     private final VineRepository vineRepository;
 
     public Long saveVine(VineDto vine) {
-        return vineRepository.save(vineMapper.vineDtoToVine(vine)).getId();
+        return vineRepository.save(vineMapper.mapVine(vine)).getId();
     }
 
     public VinesDto getVinesWithFilterAndPagination(VinesQueryParameters vinesQueryParameters) {
@@ -48,7 +48,7 @@ public class VineServiceImpl implements VineService {
 
         return VinesDto.builder()
             .totalCount(vinePages.getTotalElements())
-            .vines(vineMapper.vineListToVineDtoList(vinePages.getContent()))
+            .vines(vineMapper.mapVinesDto(vinePages.getContent()))
             .build();
     }
 
@@ -56,15 +56,6 @@ public class VineServiceImpl implements VineService {
     public Vine getVineById(Long vineId) {
         return vineRepository.findById(vineId)
             .orElseThrow(() -> new NoSuchElementException(String.format("Vine with id %s not found", vineId)));
-    }
-
-    @Override
-    public void updateVineAmount(VineDto vineDto) {
-
-        Vine vine = getVineById(vineDto.getId());
-        vineMapper.updateVineFromDto(vineDto, vine);
-        vineRepository.save(vine);
-
     }
 
 }

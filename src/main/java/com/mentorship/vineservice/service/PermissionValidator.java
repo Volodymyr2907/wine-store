@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 @Component
-public class PermissionValidationService {
+public class PermissionValidator {
 
 
     public void validateUserPermission(String requestHeader, UserRole role) throws VinePermissionException {

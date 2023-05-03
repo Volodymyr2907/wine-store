@@ -12,6 +12,4 @@ public interface VineService {
     VinesDto getVinesWithFilterAndPagination(VinesQueryParameters vinesQueryParameters);
 
     Vine getVineById(Long vineId);
-
-    void updateVineAmount(VineDto vineDto);
 }

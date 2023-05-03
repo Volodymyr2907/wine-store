@@ -10,7 +10,7 @@ import com.mentorship.vineservice.dto.VinesDto;
 import com.mentorship.vineservice.dto.enums.UserRole;
 import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.service.OrderService;
-import com.mentorship.vineservice.service.PermissionValidationService;
+import com.mentorship.vineservice.service.PermissionValidator;
 import com.mentorship.vineservice.service.VineService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -34,13 +34,13 @@ public class VineController {
     private static final String TOTAL_COUNT_HEADER = "X-Total-Count";
     private final VineService vineService;
     private final OrderService orderService;
-    private final PermissionValidationService permissionValidationService;
+    private final PermissionValidator permissionValidator;
 
     @PostMapping("/vine")
     public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-        permissionValidationService.validateUserPermission(requestHeader, UserRole.ADMIN);
+        permissionValidator.validateUserPermission(requestHeader, UserRole.ADMIN);
         Long createdVineId = vineService.saveVine(vine);
         return new ResponseEntity<>(createdVineId, HttpStatus.CREATED);
     }
@@ -79,7 +79,7 @@ public class VineController {
     public ResponseEntity<Long> createOrder(@RequestBody OrderDto order,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
-        permissionValidationService.validateUserPermission(requestHeader, UserRole.USER);
+        permissionValidator.validateUserPermission(requestHeader, UserRole.USER);
         Long createdOrderId = orderService.createOrder(order);
         return new ResponseEntity<>(createdOrderId, HttpStatus.CREATED);
     }

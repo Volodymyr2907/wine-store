@@ -13,6 +13,11 @@ import lombok.Setter;
 public class OrderEvent implements Serializable {
 
     private Long orderId;
-    private String message;
+    private OrderStatus orderStatus;
 
+
+    public enum OrderStatus {
+        CREATED,
+        PENDING
+    }
 }

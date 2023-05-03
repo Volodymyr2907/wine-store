@@ -72,4 +72,8 @@ public class Vine extends BaseEntity {
     @Column(name = "sold_wine")
     private Integer soldWine;
 
+    public void sellVines(Integer amount) {
+        this.amount -= amount;
+        this.soldWine += amount;
+    }
 }
