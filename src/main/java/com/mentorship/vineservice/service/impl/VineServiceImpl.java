@@ -14,13 +14,14 @@ import com.mentorship.vineservice.model.VinesQueryParameters;
 import com.mentorship.vineservice.repository.VineRepository;
 import com.mentorship.vineservice.service.VineService;
 import jakarta.transaction.Transactional;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -55,7 +56,8 @@ public class VineServiceImpl implements VineService {
     @Override
     public Vine getVineById(Long vineId) {
         return vineRepository.findById(vineId)
-            .orElseThrow(() -> new NoSuchElementException(String.format("Vine with id %s not found", vineId)));
+            .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, String.format("Vine with id %s not found", vineId)));
     }
 
 }
