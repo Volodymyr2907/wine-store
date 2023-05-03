@@ -5,5 +5,5 @@ import com.mentorship.vineservice.dto.OrderDto;
 
 public interface OrderService {
 
-    Long createOrder(OrderDto orderDto) throws VinePermissionException;
+    Long createOrder(OrderDto orderDto);
 }
