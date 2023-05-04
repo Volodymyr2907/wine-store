@@ -32,9 +32,9 @@ public class DeliveryDetails implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_office_id")
-    private PostOffice postOffice = null;
+    private PostOffice postOffice;
 
     @Column(name = "home_address", length = 1000)
-    private String homeAddress = null;
+    private String homeAddress;
 
 }

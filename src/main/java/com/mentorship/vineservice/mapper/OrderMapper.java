@@ -12,7 +12,7 @@ public interface OrderMapper {
     @Mapping(target = "vines", ignore = true)
     Order mapOrder(OrderDto orderDto);
 
-    @Mapping(target = "postOffice.id", source = "postOfficeId")
+    @Mapping(target = "postOffice", ignore = true)
     DeliveryDetails mapDeliveryDetails(DeliveryDetailsDto deliveryDetailsDto);
 
 }
