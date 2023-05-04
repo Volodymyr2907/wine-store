@@ -1,11 +1,14 @@
 package com.mentorship.vineservice.dto;
 
+import com.mentorship.vineservice.dto.enums.VineColor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
@@ -30,9 +33,7 @@ public class VineDto {
     @Length(max = 255, message = "Grape name name is too long")
     private String grapeName;
 
-    @NotBlank(message = "Color can not be empty or null")
-    @Length(max = 36, message = "Color name is too long")
-    private String color;
+    private VineColor color;
 
     private Boolean isSparkling;
 
@@ -58,5 +59,7 @@ public class VineDto {
 
     @Range(min = 0, max = 30, message = "Abv should be from 0 to 30")
     private Double abv;
+
+    private Integer soldWine = 0;
 
 }

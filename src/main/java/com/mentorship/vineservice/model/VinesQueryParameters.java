@@ -1,7 +1,6 @@
 package com.mentorship.vineservice.model;
 
-import java.util.Date;
-import java.util.List;
+import com.mentorship.vineservice.dto.enums.VineColor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -14,7 +13,7 @@ import lombok.Getter;
 public class VinesQueryParameters {
 
     private String sugar;
-    private String color;
+    private VineColor color;
     private String name;
     private String grapeName;
     private Integer year;

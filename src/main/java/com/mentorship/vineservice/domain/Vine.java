@@ -1,14 +1,17 @@
 package com.mentorship.vineservice.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mentorship.vineservice.dto.enums.VineColor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Vine extends BaseEntity {
 
     @OneToMany(
@@ -26,7 +30,6 @@ public class Vine extends BaseEntity {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    @JsonIgnore
     private List<OrderVine> orders = new ArrayList<>();
 
     @Column(name = "name")
@@ -38,8 +41,9 @@ public class Vine extends BaseEntity {
     @Column(name = "grape_name")
     private String grapeName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "color")
-    private String color;
+    private VineColor color;
 
     @Column(name = "is_sparkling")
     private Boolean isSparkling;
@@ -65,4 +69,11 @@ public class Vine extends BaseEntity {
     @Column(name = "abv", nullable = false)
     private Double abv;
 
+    @Column(name = "sold_wine")
+    private Integer soldWine;
+
+    public void sellVines(Integer amount) {
+        this.amount -= amount;
+        this.soldWine += amount;
+    }
 }

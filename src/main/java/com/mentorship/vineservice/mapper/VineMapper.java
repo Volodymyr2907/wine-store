@@ -8,8 +8,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface VineMapper {
 
-    Vine vineDtoToVine(VineDto vineDto);
+    Vine mapVine(VineDto vineDto);
 
-    List<VineDto> vineListToVineDtoList(List<Vine> vines);
+    List<VineDto> mapVinesDto(List<Vine> vines);
 
 }

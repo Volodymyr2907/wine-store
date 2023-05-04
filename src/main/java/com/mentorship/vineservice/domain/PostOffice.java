@@ -18,7 +18,7 @@ public class PostOffice extends BaseEntity {
     private String city;
 
     @Column(name = "office_number", nullable = false, length = 5)
-    private int officeNumber;
+    private Integer officeNumber;
 
     @Column(name = "office_address", nullable = false)
     private String officeAddress;

@@ -1,23 +1,26 @@
 package com.mentorship.vineservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Order extends BaseEntity {
 
     @OneToMany(
@@ -33,10 +36,16 @@ public class Order extends BaseEntity {
     @Embedded
     private DeliveryDetails deliveryDetails;
 
-    @Column(name = "date_time", nullable = false)
-    private LocalDate datetime;
+    @JsonIgnore
+    @Column(name = "datetime")
+    private LocalDateTime datetime = LocalDateTime.now();
 
     @Column(name = "sum", nullable = false, precision = 6, scale = 2)
-    private double sum;
+    private Double sum;
 
+    public void addVine(Vine vine, Integer vineAmount) {
+        OrderVine orderVine = new OrderVine(this, vine, vineAmount);
+        vines.add(orderVine);
+        vine.getOrders().add(orderVine);
+    }
 }

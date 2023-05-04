@@ -1,6 +1,5 @@
 package com.mentorship.vineservice.domain;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
@@ -31,9 +30,9 @@ public class DeliveryDetails implements Serializable {
     @Column(name = "phone_number", nullable = false, length = 17)
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_office_id")
-    private PostOffice postOfficeId;
+    private PostOffice postOffice;
 
     @Column(name = "home_address", length = 1000)
     private String homeAddress;

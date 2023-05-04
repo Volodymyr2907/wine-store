@@ -1,9 +1,10 @@
-package com.mentorship.vineservice.controllers.exeptions;
+package com.mentorship.vineservice.controller.exeption;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -31,6 +32,15 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
+    @ExceptionHandler(value = { IllegalArgumentException.class, NoSuchElementException.class })
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(VinePermissionException.class)
+    public ResponseEntity<Object> handleVinePermissionException(VinePermissionException exception) {
+        return buildResponseEntity(exception.getStatus(), List.of(exception.getMessage()));
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -49,8 +59,14 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(
-            ex.getMessage()));
+        String errorMessage = ex.getMessage();
+        if (ex.getRootCause() != null) {
+            Throwable rootCause = ex.getRootCause();
+            if (rootCause.getLocalizedMessage() != null) {
+                errorMessage = ex.getRootCause().getLocalizedMessage();
+            }
+        }
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(errorMessage));
     }
 
     private ResponseEntity<Object> buildResponseEntity(HttpStatus status, List<String> errors) {

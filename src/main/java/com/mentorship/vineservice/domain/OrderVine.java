@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderVine {
 
     @EmbeddedId
@@ -30,5 +32,13 @@ public class OrderVine {
     private Vine vine;
 
     @Column(name = "vine_amount", nullable = false, length = 5)
-    private int vineAmount;
+    private Integer vineAmount;
+
+
+    public OrderVine(Order order, Vine vine, Integer vineAmount) {
+        this.order = order;
+        this.vine = vine;
+        this.vineAmount = vineAmount;
+        this.orderVineId = new OrderVineId(order.getId(), vine.getId());
+    }
 }

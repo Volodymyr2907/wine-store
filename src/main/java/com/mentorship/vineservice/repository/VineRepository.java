@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.repositories;
+package com.mentorship.vineservice.repository;
 
 import com.mentorship.vineservice.domain.Vine;
 import org.springframework.data.jpa.repository.JpaRepository;

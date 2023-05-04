@@ -1,7 +1,5 @@
-package com.mentorship.vineservice.controllers.exeptions;
+package com.mentorship.vineservice.controller.exeption;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +10,8 @@ import org.springframework.http.HttpStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponse {
+public class VinePermissionException extends Exception {
 
     private HttpStatus status;
-    private LocalDateTime timeStamp;
-    private List<String> errors;
-
+    private String message;
 }

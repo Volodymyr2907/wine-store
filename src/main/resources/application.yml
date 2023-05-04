@@ -7,3 +7,24 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  rabbitmq:
+    template:
+      exchange: vine.exchange
+      routing-key: vine.routingkey
+
+
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL:
+          TRACE
+        orm:
+          jdbc:
+            bind:
+              TRACE
+      springframework:
+        amqp:
+          DEBUG

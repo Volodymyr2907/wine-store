@@ -2,6 +2,7 @@ package com.mentorship.vineservice.specification;
 
 
 import com.mentorship.vineservice.domain.Vine;
+import com.mentorship.vineservice.dto.enums.VineColor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,11 +23,11 @@ public class VineSpecification {
                 builder.equal(root.get("sugar"), sugar.trim());
     }
 
-    public static Specification<Vine> equalsColor(String color) {
+    public static Specification<Vine> equalsColor(VineColor color) {
         return (root, query, builder) ->
-            color == null || color.isEmpty()
+            color == null || color.toString().isEmpty()
                 ? builder.conjunction() :
-                builder.equal(root.get("color"), color.trim());
+                builder.equal(root.get("color"), color);
     }
 
     public static Specification<Vine> equalsGrape(String grape) {
