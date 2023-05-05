@@ -32,10 +32,12 @@ public class VineServiceImpl implements VineService {
     private final VineMapper vineMapper;
     private final VineRepository vineRepository;
 
+    @Override
     public Long saveVine(VineDto vine) {
         return vineRepository.save(vineMapper.mapVine(vine)).getId();
     }
 
+    @Override
     public VinesDto getVinesWithFilterAndPagination(VinesQueryParameters vinesQueryParameters) {
 
         Pageable pageable = PageRequest.of(vinesQueryParameters.getPage(), vinesQueryParameters.getSize());

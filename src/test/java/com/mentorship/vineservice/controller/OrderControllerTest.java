@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mentorship.vineservice.controller.exeption.ErrorResponse;
+import com.mentorship.vineservice.dto.response.ErrorResponse;
 import com.mentorship.vineservice.dto.DeliveryDetailsDto;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.OrderDto.OrderVineDto;

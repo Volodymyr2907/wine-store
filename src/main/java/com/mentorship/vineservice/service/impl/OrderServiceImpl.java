@@ -6,7 +6,7 @@ import com.mentorship.vineservice.domain.Vine;
 import com.mentorship.vineservice.dto.DeliveryDetailsDto;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.OrderDto.OrderVineDto;
-import com.mentorship.vineservice.event.model.OrderEvent.OrderStatus;
+import com.mentorship.vineservice.event.OrderEvent.OrderStatus;
 import com.mentorship.vineservice.mapper.OrderMapper;
 import com.mentorship.vineservice.repository.OrderRepository;
 import com.mentorship.vineservice.service.OrderEventPublisher;
@@ -37,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.mapOrder(orderDto);
         processDeliveryByPostInformation(orderDto.getDeliveryDetails(), order);
         addVinesToOrder(order, orderDto.getVines());
+        order.sumOrder();
 
         Long createdOrderId = orderRepository.save(order).getId();
         log.info(String.format("New order created with id '%s", createdOrderId));

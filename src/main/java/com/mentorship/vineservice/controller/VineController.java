@@ -3,7 +3,7 @@ package com.mentorship.vineservice.controller;
 
 import static com.mentorship.vineservice.dto.enums.VineColor.getVineColor;
 
-import com.mentorship.vineservice.controller.exeption.VinePermissionException;
+import com.mentorship.vineservice.controller.exeption.PermissionException;
 import com.mentorship.vineservice.dto.OrderDto;
 import com.mentorship.vineservice.dto.VineDto;
 import com.mentorship.vineservice.dto.VinesDto;
@@ -38,7 +38,7 @@ public class VineController {
 
     @PostMapping("/vine")
     public ResponseEntity<Long> createVine(@Valid @RequestBody VineDto vine,
-        @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
+        @RequestHeader("Authorization") String requestHeader) throws PermissionException {
 
         permissionValidator.validateUserPermission(requestHeader, UserRole.ADMIN);
         Long createdVineId = vineService.saveVine(vine);
@@ -77,7 +77,7 @@ public class VineController {
 
     @PostMapping("/order")
     public ResponseEntity<Long> createOrder(@Valid @RequestBody OrderDto order,
-        @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
+        @RequestHeader("Authorization") String requestHeader) throws PermissionException {
 
         permissionValidator.validateUserPermission(requestHeader, UserRole.USER);
         Long createdOrderId = orderService.createOrder(order);

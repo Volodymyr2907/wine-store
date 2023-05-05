@@ -48,4 +48,11 @@ public class Order extends BaseEntity {
         vines.add(orderVine);
         vine.getOrders().add(orderVine);
     }
+
+    public void sumOrder() {
+
+        sum = vines.stream().mapToDouble(
+            vine -> vine.getVine().getPrice() * vine.getVineAmount()
+        ).sum();
+    }
 }

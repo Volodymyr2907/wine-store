@@ -1,6 +1,7 @@
-package com.mentorship.vineservice.controller.exeption;
+package com.mentorship.vineservice.handler;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import com.mentorship.vineservice.dto.response.ErrorResponse;
+import com.mentorship.vineservice.controller.exeption.PermissionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +27,13 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<Object> handleSqlIntegrityException(SQLIntegrityConstraintViolationException ex) {
-
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
-    }
-
     @ExceptionHandler(value = { IllegalArgumentException.class, NoSuchElementException.class })
     public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
-    @ExceptionHandler(VinePermissionException.class)
-    public ResponseEntity<Object> handleVinePermissionException(VinePermissionException exception) {
+    @ExceptionHandler(PermissionException.class)
+    public ResponseEntity<Object> handleVinePermissionException(PermissionException exception) {
         return buildResponseEntity(exception.getStatus(), List.of(exception.getMessage()));
     }
 

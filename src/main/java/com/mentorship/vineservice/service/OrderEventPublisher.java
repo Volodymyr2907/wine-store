@@ -1,7 +1,7 @@
 package com.mentorship.vineservice.service;
 
-import com.mentorship.vineservice.event.model.OrderEvent;
-import com.mentorship.vineservice.event.model.OrderEvent.OrderStatus;
+import com.mentorship.vineservice.event.OrderEvent;
+import com.mentorship.vineservice.event.OrderEvent.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

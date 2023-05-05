@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.event.model;
+package com.mentorship.vineservice.event;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
