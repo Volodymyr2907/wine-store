@@ -37,7 +37,7 @@ public class VineController {
     private final PermissionValidator permissionValidator;
 
     @PostMapping("/vine")
-    public ResponseEntity<Long> createVine(@RequestBody VineDto vine,
+    public ResponseEntity<Long> createVine(@Valid @RequestBody VineDto vine,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
         permissionValidator.validateUserPermission(requestHeader, UserRole.ADMIN);
@@ -76,7 +76,7 @@ public class VineController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Long> createOrder(@RequestBody OrderDto order,
+    public ResponseEntity<Long> createOrder(@Valid @RequestBody OrderDto order,
         @RequestHeader("Authorization") String requestHeader) throws VinePermissionException {
 
         permissionValidator.validateUserPermission(requestHeader, UserRole.USER);

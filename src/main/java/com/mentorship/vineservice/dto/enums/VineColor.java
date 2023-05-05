@@ -18,12 +18,15 @@ public enum VineColor {
 
     @JsonCreator
     public static VineColor getVineColor(String value) {
-        for (VineColor vine : VineColor.values()) {
-            if (vine.name().equals(value.toUpperCase())) {
-                return vine;
+        if (value != null) {
+            for (VineColor vine : VineColor.values()) {
+                if (vine.name().equals(value.toUpperCase())) {
+                    return vine;
+                }
             }
+            throw new IllegalArgumentException(
+                "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
         }
-        throw new IllegalArgumentException(
-            "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
+        return null;
     }
 }

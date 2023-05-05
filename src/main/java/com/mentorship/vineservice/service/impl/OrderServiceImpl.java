@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void processDeliveryByPostInformation(DeliveryDetailsDto deliveryDetails, Order order) {
-        if (deliveryDetails != null) {
+        if (deliveryDetails.getPostOfficeId() != null) {
             PostOffice postOffice = postOfficeService.findPostOfficeById(deliveryDetails.getPostOfficeId());
 
             order.getDeliveryDetails().setPostOffice(postOffice);
