@@ -1,4 +1,4 @@
-package com.mentorship.vineservice.service;
+package com.mentorship.vineservice.service.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +9,5 @@ public interface PermissionClient {
 
     @GetMapping("/api/auth-service/permission/{token}/{role}")
     Boolean getUserPermission(@PathVariable String token, @PathVariable String role);
-
 
 }

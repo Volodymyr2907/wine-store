@@ -2,6 +2,7 @@ package com.mentorship.vineservice.service;
 
 import com.mentorship.vineservice.controller.exeption.PermissionException;
 import com.mentorship.vineservice.dto.enums.UserRole;
+import com.mentorship.vineservice.service.client.PermissionClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
