@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "`order`")
+@Table(name = "client_order")
 @Getter
 @Setter
 @NoArgsConstructor

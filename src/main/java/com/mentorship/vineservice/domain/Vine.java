@@ -57,7 +57,7 @@ public class Vine extends BaseEntity {
     @Column(name = "region")
     private String region;
 
-    @Column(name = "year", nullable = false, length = 4)
+    @Column(name = "'year'", nullable = false, length = 4)
     private Integer year;
 
     @Column(name = "price", nullable = false, precision = 6, scale = 2)
