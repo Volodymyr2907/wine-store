@@ -50,7 +50,6 @@ public class Order extends BaseEntity {
     }
 
     public void sumOrder() {
-
         sum = vines.stream().mapToDouble(
             vine -> vine.getVine().getPrice() * vine.getVineAmount()
         ).sum();
