@@ -6,12 +6,10 @@ Spring boot application that provides an API for making operation with vine proj
 - get vines
 - create order
 
-## Project structure
+## Configuration
 
-- [vine controller](src/main/java/com/mentorship/vineservice/controller/VineController.java) 
-- [domain objects ](src/main/java/com/mentorship/vineservice/domain)
-- [service implementation layer](src/main/java/com/mentorship/vineservice/service/impl) 
-- [repository layer](src/main/java/com/mentorship/vineservice/repository)
+1. login to Mysql server using credentials from [application.yml](src/main/resources/application.yml) 
+2. create DB schema named **vine_db**
 
 ## Service Requirements
 
