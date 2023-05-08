@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface PermissionClient {
 
     @GetMapping("/api/auth-service/permission/{token}/{role}")
-    @TokenValidation({FeignException.class})
+    @TokenValidation()
     Boolean getUserPermission(@PathVariable String token, @PathVariable String role);
 
 }
