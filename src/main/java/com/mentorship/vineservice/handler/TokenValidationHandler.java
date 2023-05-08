@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Aspect
 @Component
-public class PermissionValidationHandler {
+public class TokenValidationHandler {
 
     @Around("@annotation(tokenValidation)")
     public Object handleException(ProceedingJoinPoint joinPoint, TokenValidation tokenValidation) throws Throwable {

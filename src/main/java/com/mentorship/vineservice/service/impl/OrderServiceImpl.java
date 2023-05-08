@@ -37,7 +37,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.mapOrder(orderDto);
         processDeliveryByPostInformation(orderDto.getDeliveryDetails(), order);
         addVinesToOrder(order, orderDto.getVines());
-        order.sumOrder();
 
         Long createdOrderId = orderRepository.save(order).getId();
         log.info(String.format("New order created with id '%s", createdOrderId));
