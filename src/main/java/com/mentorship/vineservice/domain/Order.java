@@ -1,6 +1,5 @@
 package com.mentorship.vineservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -37,12 +36,11 @@ public class Order extends BaseEntity {
     @Embedded
     private DeliveryDetails deliveryDetails;
 
-    @JsonIgnore
     @Column(name = "datetime")
     private LocalDateTime datetime = LocalDateTime.now();
 
-    @Column(name = "sum", nullable = false, precision = 6, scale = 2)
-    private Double sum;
+    @Column(name = "sum")
+    private Long sum;
 
     public void addVine(Vine vine, Integer vineAmount) {
         OrderVine orderVine = new OrderVine(this, vine, vineAmount);
@@ -53,7 +51,7 @@ public class Order extends BaseEntity {
     @PrePersist
     public void sumOrder() {
         sum = vines.stream()
-            .mapToDouble(vine -> vine.getVine().getPrice() * vine.getVineAmount()
-        ).sum();
+            .mapToLong(vine -> vine.getVine().getPrice() * vine.getVineAmount()
+            ).sum();
     }
 }

@@ -38,13 +38,13 @@
             <column name="'year'" type="int(4)">
                 <constraints nullable="false"/>
             </column>
-            <column name="price" type="decimal(8, 2)">
+            <column name="price" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="amount" type="int(5)">
                 <constraints nullable="false"/>
             </column>
-            <column name="abv" type="decimal(3, 1)">
+            <column name="abv" type="integer">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -89,7 +89,7 @@
             <column name="datetime" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column name="sum" type="decimal(6, 2)">
+            <column name="sum" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -1,7 +1,5 @@
 package com.mentorship.vineservice.dto.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -14,19 +12,4 @@ public enum VineColor {
     RED,
     ORANGE,
     ROSE;
-
-
-    @JsonCreator
-    public static VineColor getVineColor(String value) {
-        if (value != null) {
-            for (VineColor vine : VineColor.values()) {
-                if (vine.name().equals(value.toUpperCase())) {
-                    return vine;
-                }
-            }
-            throw new IllegalArgumentException(
-                "Unknown enum type " + value + ", Allowed values are " + Arrays.toString(values()));
-        }
-        return null;
-    }
 }

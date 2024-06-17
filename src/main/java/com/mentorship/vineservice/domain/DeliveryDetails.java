@@ -6,15 +6,20 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 
 @Embeddable
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DeliveryDetails implements Serializable {
 
 
@@ -30,7 +35,7 @@ public class DeliveryDetails implements Serializable {
     @Column(name = "phone_number", nullable = false, length = 17)
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_office_id")
     private PostOffice postOffice;
 

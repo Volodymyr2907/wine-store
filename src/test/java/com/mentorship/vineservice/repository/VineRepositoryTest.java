@@ -1,186 +1,194 @@
 package com.mentorship.vineservice.repository;
 
-import static com.mentorship.vineservice.specification.VineSpecification.equalsColor;
-import static com.mentorship.vineservice.specification.VineSpecification.equalsGrape;
-import static com.mentorship.vineservice.specification.VineSpecification.equalsName;
-import static com.mentorship.vineservice.specification.VineSpecification.equalsSugar;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mentorship.vineservice.domain.DeliveryDetails;
+import com.mentorship.vineservice.domain.Order;
+import com.mentorship.vineservice.domain.PostOffice;
 import com.mentorship.vineservice.domain.Vine;
 import com.mentorship.vineservice.dto.enums.VineColor;
-import java.util.HashMap;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-public class VineRepositoryTest {
+@ActiveProfiles("test")
+class VineRepositoryTest {
 
     @Autowired
     private VineRepository vineRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private PostOfficeRepository postOfficeRepository;
+    @Autowired
+    private EntityManager entityManager;
+
     private Vine merlotVine1;
     private Vine zinfandelVine1;
     private Vine cabernetVine2;
     private Vine cabernetVine1;
     private Vine merlotVine2;
     private Vine merlotVine3;
-    private Map<Vine, Vine> vineMap;
     private List<Vine> defaultListOfVines;
+    private PostOffice ps3;
 
 
     @BeforeEach
     public void setUpData() {
 
-        merlotVine1 = createVineObject("MERLOT_VINE", VineColor.RED, "MERLOT", "SWEET");
-        zinfandelVine1 = createVineObject("ZINFANDEL_VINE", VineColor.ORANGE, "ZINFANDEL", "DRY");
-        cabernetVine2 = createVineObject("CABERNET_VINE", VineColor.WHITE, "CABERNET SAUVIGNON", "SWEET");
-        cabernetVine1 = createVineObject("CABERNET_VINE", VineColor.RED, "CABERNET SAUVIGNON", "SEMI-SWEET");
-        merlotVine2 = createVineObject("MERLOT_VINE", VineColor.WHITE, "MERLOT", "SWEET");
-        merlotVine3 = createVineObject("MERLOT_VINE", VineColor.ROSE, "MERLOT", "DRY");
+        merlotVine1 = createVines("MERLOT_VINE", VineColor.RED, "MERLOT", "SWEET", 2021);
+        zinfandelVine1 = createVines("ZINFANDEL_VINE", VineColor.ORANGE, "ZINFANDEL", "DRY", 2000);
+        cabernetVine2 = createVines("CABERNET_VINE", VineColor.WHITE, "CABERNET SAUVIGNON", "SWEET", 2020);
+        cabernetVine1 = createVines("CABERNET_VINE", VineColor.RED, "CABERNET SAUVIGNON", "SEMI-SWEET", 2013);
+        merlotVine2 = createVines("MERLOT_VINE", VineColor.WHITE, "MERLOT", "SWEET", 2024);
+        merlotVine3 = createVines("MERLOT_VINE", VineColor.ROSE, "MERLOT", "DRY", 2001);
+        defaultListOfVines = List.of(merlotVine1, zinfandelVine1, cabernetVine2, cabernetVine1, merlotVine2,
+            merlotVine3);
 
-        defaultListOfVines = List.of(
-            merlotVine1,
-            zinfandelVine1,
-            cabernetVine2,
-            cabernetVine1,
-            merlotVine2,
-            merlotVine3
-        );
+        PostOffice ps1 = createPostOffice("Lviv", "Pakova, 9", 1);
+        PostOffice ps2 = createPostOffice("Kyiv", "Naukova, 2", 10);
+        ps3 = createPostOffice("Ternopil", "Opilska, 4", 4);
 
-        vineMap = new HashMap<>();
+        DeliveryDetails dd1 = new DeliveryDetails();
+        dd1.setHomeAddress("Lviv, Kopernyka str, 90");
+        DeliveryDetails dd2 = new DeliveryDetails();
+        dd2.setHomeAddress("Lutsk, Shevchenko str, 14");
+        DeliveryDetails dd3 = new DeliveryDetails();
+        dd3.setPostOffice(ps2);
+        DeliveryDetails dd4 = new DeliveryDetails();
+        dd4.setPostOffice(ps1);
 
-        defaultListOfVines.forEach(vineObject -> {
-
-            Vine createdVine = vineRepository.save(vineObject);
-
-            vineMap.put(vineObject, createdVine);
-        });
-
-    }
-
-
-    @Test
-    public void shouldCreateVineAndReturnVineObject() {
-
-        Vine vineToSave = createVineObject("CHARDONNAY_VINE", VineColor.RED, "Chardonnay", "SWEET");
-
-        Vine createdVine = vineRepository.save(vineToSave);
-
-        Vine expectedVine = vineRepository.findById(createdVine.getId()).get();
-
-        assertThat(createdVine).isEqualTo(expectedVine);
-
-    }
+        Order order1 = createOrder(merlotVine1, 10, createDeliveryDetails("Lviv, Kopernyka str, 90", null));
+        Order order2 = createOrder(zinfandelVine1, 5, createDeliveryDetails("Lutsk, Shevchenko str, 14", null));
+        Order order3 = createOrder(merlotVine1, 7, createDeliveryDetails(null, ps1));
+        Order order4 = createOrder(merlotVine1, 1, createDeliveryDetails(null, ps2));
 
 
-    @Test
-    public void shouldReturnAllVinesWithoutFilterAndPagination() {
+        entityManager.flush();
 
-        List<Vine> listOfAllVines = vineRepository.findAll();
-
-        assertThat(listOfAllVines).hasSize(defaultListOfVines.size());
-    }
-
-
-    @Test
-    public void shouldReturnVinesByNameAndColorParameters() {
-
-        var searchParameters = Specification.where(
-                equalsName("MERLOT_VINE"))
-            .and(equalsColor(VineColor.RED));
-
-        List<Vine> listOfAllVines = vineRepository.findAll(searchParameters);
-
-        assertThat(listOfAllVines).hasSize(1);
-        assertThat(listOfAllVines).containsExactlyInAnyOrder(vineMap.get(merlotVine1));
-
-    }
-
-
-    @Test
-    public void shouldReturnVinesFilteredByGrapeAndSugarParameters() {
-
-        var searchParameters = Specification.where(
-                equalsGrape("MERLOT"))
-            .and(equalsSugar("SWEET"));
-
-        List<Vine> listOfAllVines = vineRepository.findAll(searchParameters);
-
-        assertThat(listOfAllVines).hasSize(2);
-        assertThat(listOfAllVines).containsExactlyInAnyOrder(vineMap.get(merlotVine1), vineMap.get(merlotVine2));
     }
 
     @Test
-    public void shouldReturnVinesFilteredByNameAndColorAndGrapeAndSugarParameters() {
-
-        var searchParameters = Specification.where(
-                equalsGrape("MERLOT"))
-            .and(equalsName("MERLOT_VINE"))
-            .and(equalsColor(VineColor.ROSE))
-            .and(equalsSugar("DRY"));
-
-        List<Vine> listOfAllVines = vineRepository.findAll(searchParameters);
-
-        assertThat(listOfAllVines).hasSize(1);
-        assertThat(listOfAllVines).containsOnly(vineMap.get(merlotVine3));
+    void test() {
+        List<Vine> result = vineRepository.getAllVines();
+        assertThat(result).hasSameElementsAs(defaultListOfVines);
     }
 
     @Test
-    public void shouldReturnEmptyListIfSearchCriteriaDidNotMatchAnyVine() {
-
-        var searchParameters = Specification.where(
-                equalsGrape("MERLOT"))
-            .and(equalsName("MERLOT_VINE"))
-            .and(equalsColor(VineColor.ROSE))
-            .and(equalsSugar("SWEET"));
-
-        List<Vine> listOfAllVines = vineRepository.findAll(searchParameters);
-
-        assertThat(listOfAllVines).hasSize(0);
+    void test2() {
+        Long result = vineRepository.getVineIdWithFiltering(1L);
+        assertThat(result).isEqualTo(merlotVine1.getId());
     }
 
     @Test
-    public void shouldReturnVinesByPageableParametersAndSearchCriteria() {
+    void test3() {
+        Long result = vineRepository.getVineIdFilteredByJoinId();
+    }
 
-        Pageable pageable = PageRequest.of(0, 2);
+    @Test
+    void test4() {
+        var result = vineRepository.getAllOrdersIdWithDeliveryInfo();
+        assertThat(result).isEmpty();
+    }
 
-        var searchParameters = Specification.where(
-            equalsSugar("SWEET"));
-
-        Page<Vine> listOfAllVines = vineRepository.findAll(searchParameters, pageable);
-
-        Integer listOfPages = listOfAllVines.getTotalPages();
-        Long allElements = listOfAllVines.getTotalElements();
-
-        assertThat(listOfPages).isEqualTo(2);
-        assertThat(allElements).isEqualTo(3);
+    @Test
+    void test5() {
+        var result = vineRepository.getVinesWithFilteringInSubQuery();
+        assertThat(result).isEmpty();
 
     }
 
-    private Vine createVineObject(String name, VineColor vineColor, String grape, String sugar) {
+    @Test
+    void test6() {
+        var result = vineRepository.getAllOrdersWithDeliveryDetails();
+        assertThat(result).isEmpty();
+
+    }
+
+    @Test
+    void test7() {
+        var result = vineRepository.getCountedSoldWines();
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void test8() {
+        var result = vineRepository.getVinesWithFilteringInCte();
+        assertThat(result).isEmpty();
+
+    }
+
+    @Test
+    void test9() {
+        vineRepository.updateVineNameById("zalupa", 1L);
+        entityManager.clear();
+        entityManager.flush();
+        var result = vineRepository.getById(1L);
+        assertThat(result.getName()).isEqualTo("zalupa");
+    }
+
+    @Test
+    void test10() {
+        Long id = ps3.getId();
+        vineRepository.deletePostOfficeById(id);
+        entityManager.clear();
+        entityManager.flush();
+        var result = postOfficeRepository.existsById(id);
+        assertThat(result).isFalse();
+    }
+
+
+    private Vine createVines(String name, VineColor vineColor, String grape, String sugar, Integer year) {
         Vine vine = new Vine();
-
         vine.setName(name);
         vine.setColor(vineColor);
         vine.setCountry("UKRAINE");
         vine.setManufacturer("KOLONIST");
-        vine.setYear(2019);
+        vine.setYear(year);
         vine.setSugar(sugar);
         vine.setGrapeName(grape);
         vine.setAmount(100);
         vine.setSoldWine(10);
-        vine.setAbv(10.5);
+        vine.setAbv(10);
         vine.setIsSparkling(true);
-        vine.setPrice(1000.0);
+        vine.setPrice(1000);
         vine.setRegion("KHERSON");
-
-        return vine;
+        return vineRepository.saveAndFlush(vine);
     }
+
+    private Order createOrder(Vine vine, Integer vineAmount, DeliveryDetails deliveryDetails) {
+        Order order = new Order();
+        order.addVine(vine, vineAmount);
+        order.setDatetime(LocalDateTime.MAX);
+        order.setUserId(1L);
+        order.setDeliveryDetails(deliveryDetails);
+        return orderRepository.saveAndFlush(order);
+    }
+
+    private PostOffice createPostOffice(String city, String address, Integer number) {
+        PostOffice postOffice = new PostOffice();
+        postOffice.setCity(city);
+        postOffice.setOfficeAddress(address);
+        postOffice.setOfficeNumber(number);
+
+        return postOfficeRepository.saveAndFlush(postOffice);
+    }
+
+    private  DeliveryDetails createDeliveryDetails(String homeAddress, PostOffice postOffice) {
+        DeliveryDetails deliveryDetails = new DeliveryDetails();
+        deliveryDetails.setHomeAddress(homeAddress);
+        deliveryDetails.setPostOffice(postOffice);
+        deliveryDetails.setUserEmail("colombo@gmail.com");
+        deliveryDetails.setPhoneNumber("+38056893456");
+        deliveryDetails.setUserLastName("Bybko");
+        deliveryDetails.setUserFirstName("John");
+        return deliveryDetails;
+    }
+
 }

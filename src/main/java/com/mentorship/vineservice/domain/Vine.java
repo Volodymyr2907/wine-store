@@ -60,14 +60,14 @@ public class Vine extends BaseEntity {
     @Column(name = "'year'", nullable = false, length = 4)
     private Integer year;
 
-    @Column(name = "price", nullable = false, precision = 6, scale = 2)
-    private Double price;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
     @Column(name = "amount", nullable = false, length = 5)
     private Integer amount;
 
     @Column(name = "abv", nullable = false)
-    private Double abv;
+    private Integer abv;
 
     @Column(name = "sold_wine")
     private Integer soldWine;
