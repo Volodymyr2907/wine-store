@@ -35,7 +35,7 @@ public class DeliveryDetails implements Serializable {
     @Column(name = "phone_number", nullable = false, length = 17)
     private String phoneNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_office_id")
     private PostOffice postOffice;
 

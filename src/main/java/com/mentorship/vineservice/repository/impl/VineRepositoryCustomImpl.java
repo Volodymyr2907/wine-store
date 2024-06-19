@@ -14,12 +14,12 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +36,7 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+
     @Override
     public List<Vine> getAllVines() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -47,38 +48,54 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
     }
 
     @Override
-    public List<Order> getAllOrdersWithDeliveryDetails() {
+    public List<Long> getVineIdsWithFilterByName(String name) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Vine> root = criteriaQuery.from(Vine.class);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("name"), name);
+        criteriaQuery.select(root.get("id"))
+            .where(predicate);
+        return entityManager.createQuery(criteriaQuery).getResultList();
+
+    }
+
+    @Override
+    public String getVineNameWithFilterByJoinedOrderId(Long orderId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+        Root<Vine> root = criteriaQuery.from(Vine.class);
+        Join<Vine, OrderVine> joinOrders = root.join("orders", JoinType.INNER);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.equal(joinOrders.get("order").get("id"), orderId));
+
+        criteriaQuery.select(root.get("name"))
+            .where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public List<Order> getAllOrdersWithFetchedDeliveryDetails() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = criteriaQuery.from(Order.class);
-        root.fetch("deliveryDetails", JoinType.LEFT);
+        Fetch<Order, DeliveryDetails> fetchDeliveryDetails = root.fetch("deliveryDetails", JoinType.LEFT);
+        fetchDeliveryDetails.fetch("postOffice", JoinType.LEFT);
         criteriaQuery.select(root);
         return entityManager.createQuery(criteriaQuery).getResultList();
 
     }
 
     @Override
-    public Long getVineIdWithFiltering(Long vineId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Vine> root = criteriaQuery.from(Vine.class);
-
-        Predicate predicate = criteriaBuilder.equal(root.get("id"), vineId);
-        criteriaQuery.select(root.get("id"))
-            .where(predicate);
-        return entityManager.createQuery(criteriaQuery).getSingleResult();
-
-    }
-
-    @Override
-    public List<OrderVine> getVinesWithFilteringInSubQuery() {
+    public List<OrderVine> getOrderVinesWithFilteringInSubQuery(Integer from, Integer to) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderVine> criteriaQuery = criteriaBuilder.createQuery(OrderVine.class);
         Root<OrderVine> root = criteriaQuery.from(OrderVine.class);
 
         Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
         Root<Vine> subqueryRoot = subquery.from(Vine.class);
-        subquery.select(subqueryRoot.get("id")).where(criteriaBuilder.between(subqueryRoot.get("year"), 2012, 2021));
+        subquery.select(subqueryRoot.get("id")).where(criteriaBuilder.between(subqueryRoot.get("year"), from, to));
 
         criteriaQuery.select(root)
             .where(root.get("vine").get("id").in(subquery));
@@ -86,29 +103,7 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
     }
 
     @Override
-    public List<OrderVine> getVinesWithFilteringInCte() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
-        JpaCriteriaQuery<Tuple> tupleJpaCriteriaQuery = (JpaCriteriaQuery<Tuple>) criteriaBuilder.createTupleQuery();
-        JpaRoot<Vine> vineJpaRoot = tupleJpaCriteriaQuery.from(Vine.class);
-        tupleJpaCriteriaQuery.multiselect(
-            vineJpaRoot.get("id").alias("vine_id"),
-            vineJpaRoot.get("name").alias("vine_name")
-        ).where(criteriaBuilder.between(vineJpaRoot.get("year"), 2012, 2021));
-
-        JpaCriteriaQuery<OrderVine> jpaCriteriaQuery = (JpaCriteriaQuery<OrderVine>) criteriaBuilder.createQuery(
-            OrderVine.class);
-        JpaCteCriteria<Tuple> cteCriteria = jpaCriteriaQuery.with(tupleJpaCriteriaQuery);
-
-        JpaRoot<OrderVine> root = jpaCriteriaQuery.from(OrderVine.class);
-        JpaJoinedFrom<?, Tuple> joinTuple = root.join(cteCriteria);
-        joinTuple.on(root.get("vine").get("id").in(joinTuple.get("vine_id")));
-
-        jpaCriteriaQuery.select(root);
-        return entityManager.createQuery(jpaCriteriaQuery).getResultList();
-    }
-
-    public Map<String, Long> getCountedSoldWines() {
+    public Map<String, Long> getMapVineNameToSoldVine() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
         Root<Vine> root = criteriaQuery.from(Vine.class);
@@ -117,7 +112,8 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
         criteriaQuery.select(criteriaBuilder.tuple(
             root.get("name"),
             criteriaBuilder.count(orderVineJoin.get("vine").get("id"))
-        )).groupBy(root.get("name"));
+        )).groupBy(root.get("name"))
+            .orderBy(criteriaBuilder.asc(root.get("name")));
 
         List<Tuple> tupleResult = entityManager.createQuery(criteriaQuery).getResultList();
 
@@ -133,22 +129,7 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
     }
 
     @Override
-    public Long getVineIdFilteredByJoinId() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Vine> root = criteriaQuery.from(Vine.class);
-        Join<Vine, OrderVine> joinOrders = root.join("orders", JoinType.INNER);
-
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(criteriaBuilder.equal(joinOrders.get("order").get("id"), 1));
-
-        criteriaQuery.select(root.get("id"))
-            .where(predicates.toArray(new Predicate[0]));
-        return entityManager.createQuery(criteriaQuery).getSingleResult();
-    }
-
-    @Override
-    public List<OrderPostOfficeDto> getAllOrdersIdWithDeliveryInfo() {
+    public List<OrderPostOfficeDto> getOrderPostOfficeDto() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteriaQuery = criteriaBuilder.createTupleQuery();
         Root<Order> root = criteriaQuery.from(Order.class);
@@ -172,7 +153,7 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
                 (Integer) tuple.get(2)
             )));
 
-        // construct wi
+        // construct
 //        CriteriaQuery<OrderPostOfficeDto> criteriaQuery = criteriaBuilder.createQuery(OrderPostOfficeDto.class);
 //        Root<Order> root = criteriaQuery.from(Order.class);
 //        Join<Order, DeliveryDetails> joinDeliveryDetails = root.join("deliveryDetails");
@@ -187,6 +168,29 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
 //        return typedQuery.getResultList();
 
         return orderPostOfficeDtos;
+    }
+
+    @Override
+    public List<OrderVine> getOrderVinesWithFilteringInCte(Integer from, Integer to) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        JpaCriteriaQuery<Tuple> tupleJpaCriteriaQuery = (JpaCriteriaQuery<Tuple>) criteriaBuilder.createTupleQuery();
+        JpaRoot<Vine> vineJpaRoot = tupleJpaCriteriaQuery.from(Vine.class);
+        tupleJpaCriteriaQuery.multiselect(
+            vineJpaRoot.get("id").alias("vine_id"),
+            vineJpaRoot.get("name").alias("vine_name")
+        ).where(criteriaBuilder.between(vineJpaRoot.get("year"), from, to));
+
+        JpaCriteriaQuery<OrderVine> jpaCriteriaQuery = (JpaCriteriaQuery<OrderVine>) criteriaBuilder.createQuery(
+            OrderVine.class);
+        JpaCteCriteria<Tuple> cteCriteria = jpaCriteriaQuery.with(tupleJpaCriteriaQuery);
+
+        JpaRoot<OrderVine> root = jpaCriteriaQuery.from(OrderVine.class);
+        JpaJoinedFrom<?, Tuple> joinTuple = root.join(cteCriteria);
+        joinTuple.on(root.get("vine").get("id").in(joinTuple.get("vine_id")));
+
+        jpaCriteriaQuery.select(root);
+        return entityManager.createQuery(jpaCriteriaQuery).getResultList();
     }
 
     @Override

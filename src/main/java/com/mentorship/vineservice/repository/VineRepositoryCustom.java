@@ -10,14 +10,23 @@ import java.util.Map;
 public interface VineRepositoryCustom {
 
     List<Vine> getAllVines();
-    Long getVineIdWithFiltering(Long vineId);
-    Long getVineIdFilteredByJoinId();
-    List<OrderPostOfficeDto> getAllOrdersIdWithDeliveryInfo();
-    List<OrderVine> getVinesWithFilteringInSubQuery();
-    List<Order> getAllOrdersWithDeliveryDetails();
-    Map<String, Long> getCountedSoldWines();
-    List<OrderVine> getVinesWithFilteringInCte();
+
+    List<Long> getVineIdsWithFilterByName(String name);
+
+    String getVineNameWithFilterByJoinedOrderId(Long orderId);
+
+    List<OrderPostOfficeDto> getOrderPostOfficeDto();
+
+    List<OrderVine> getOrderVinesWithFilteringInSubQuery(Integer from, Integer to);
+
+    List<Order> getAllOrdersWithFetchedDeliveryDetails();
+
+    Map<String, Long> getMapVineNameToSoldVine();
+
+    List<OrderVine> getOrderVinesWithFilteringInCte(Integer from, Integer to);
+
     void updateVineNameById(String newName, Long id);
+
     void deletePostOfficeById(Long id);
 
 }

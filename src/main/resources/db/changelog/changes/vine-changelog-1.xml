@@ -47,6 +47,9 @@
             <column name="abv" type="integer">
                 <constraints nullable="false"/>
             </column>
+            <column name="sold_wine" type="int(5)" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <createTable tableName="post_office">
