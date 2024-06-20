@@ -174,8 +174,8 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
     public List<OrderVine> getOrderVinesWithFilteringInCte(Integer from, Integer to) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
-        JpaCriteriaQuery<Tuple> tupleJpaCriteriaQuery = (JpaCriteriaQuery<Tuple>) criteriaBuilder.createTupleQuery();
-        JpaRoot<Vine> vineJpaRoot = tupleJpaCriteriaQuery.from(Vine.class);
+        CriteriaQuery<Tuple> tupleJpaCriteriaQuery = criteriaBuilder.createTupleQuery();
+        Root<Vine> vineJpaRoot = tupleJpaCriteriaQuery.from(Vine.class);
         tupleJpaCriteriaQuery.multiselect(
             vineJpaRoot.get("id").alias("vine_id"),
             vineJpaRoot.get("name").alias("vine_name")
@@ -186,7 +186,7 @@ public class VineRepositoryCustomImpl implements VineRepositoryCustom {
         JpaCteCriteria<Tuple> cteCriteria = jpaCriteriaQuery.with(tupleJpaCriteriaQuery);
 
         JpaRoot<OrderVine> root = jpaCriteriaQuery.from(OrderVine.class);
-        JpaJoinedFrom<?, Tuple> joinTuple = root.join(cteCriteria);
+        JpaJoinedFrom<OrderVine, Tuple> joinTuple = (JpaJoinedFrom<OrderVine, Tuple>) root.join(cteCriteria);
         joinTuple.on(root.get("vine").get("id").in(joinTuple.get("vine_id")));
 
         jpaCriteriaQuery.select(root);
